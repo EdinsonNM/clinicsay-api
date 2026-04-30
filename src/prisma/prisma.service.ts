@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { createRequire } from 'node:module';
+import { PrismaClient } from '../generated/prisma';
 
 type AppointmentStatus = 'SCHEDULED' | 'CANCELLED' | 'COMPLETED';
 
@@ -75,14 +75,6 @@ interface PrismaClientLike {
   };
 }
 
-interface PrismaClientModule {
-  PrismaClient: new () => PrismaClientLike;
-}
-
-const requireModule = createRequire(__filename) as (
-  specifier: string,
-) => unknown;
-
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
   readonly isEnabled = Boolean(process.env.DATABASE_URL);
@@ -95,9 +87,9 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit(): Promise<void> {
     if (!this.isEnabled) return;
-    const module = requireModule('@prisma/client') as PrismaClientModule;
-    this.client = new module.PrismaClient();
-    await this.client.$connect();
+    const client = new PrismaClient() as unknown as PrismaClientLike;
+    this.client = client;
+    await client.$connect();
   }
 
   async onModuleDestroy(): Promise<void> {

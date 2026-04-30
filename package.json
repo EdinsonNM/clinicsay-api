@@ -6,12 +6,13 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prebuild": "pnpm prisma:generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -21,7 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "PRISMA_GENERATE_SKIP_AUTOINSTALL=1 prisma generate --schema ../../prisma/schema.prisma",
     "prisma:migrate": "prisma migrate deploy --schema ../../prisma/schema.prisma",
-    "prisma:seed": "ts-node ../../prisma/seed.ts",
+    "prisma:seed": "pnpm prisma:generate && ts-node ../../prisma/seed.ts",
     "swagger:export": "ts-node scripts/export-openapi.ts"
   },
   "dependencies": {
@@ -30,7 +31,6 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
-    "@prisma/client": "6.19.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "reflect-metadata": "^0.2.2",
