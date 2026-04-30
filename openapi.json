@@ -1,0 +1,376 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud invalida"
+          },
+          "401": {
+            "description": "Credenciales dummy invalidas"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/appointments": {
+      "get": {
+        "operationId": "AppointmentsController_list",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "2026-05-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "2026-05-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Appointments"
+        ]
+      },
+      "post": {
+        "operationId": "AppointmentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppointmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Appointments"
+        ]
+      }
+    },
+    "/appointments/{id}": {
+      "get": {
+        "operationId": "AppointmentsController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields[specialties]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "name"
+            }
+          },
+          {
+            "name": "fields[doctors]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "name"
+            }
+          },
+          {
+            "name": "fields[patients]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "fullName,dni"
+            }
+          },
+          {
+            "name": "fields[appointments]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "date,status"
+            }
+          },
+          {
+            "name": "include",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "patient,doctor.specialty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Appointments"
+        ]
+      }
+    },
+    "/patients": {
+      "get": {
+        "operationId": "PatientsController_search",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pacientes encontrados con proyeccion publica"
+          }
+        },
+        "tags": [
+          "Patients"
+        ]
+      }
+    },
+    "/doctors": {
+      "get": {
+        "operationId": "DoctorsController_list",
+        "parameters": [
+          {
+            "name": "specialtyId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Doctores asociados a la especialidad"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Doctors"
+        ]
+      }
+    },
+    "/specialties": {
+      "get": {
+        "operationId": "SpecialtiesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Especialidades disponibles"
+          }
+        },
+        "tags": [
+          "Specialties"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API De Gestion Admin De Citas ClinicSay",
+    "description": "Contrato ClinicSay para citas admin con proyecciones seguras.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "LoginRequestDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "example": "admin"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "dummy-admin-token"
+          },
+          "user": {
+            "type": "object",
+            "example": {
+              "id": "admin-1",
+              "role": "admin",
+              "name": "Administrador ClinicSay"
+            }
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
+      },
+      "AppointmentResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object"
+          },
+          "included": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "NewPatientDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Juan Perez"
+          },
+          "dni": {
+            "type": "string",
+            "example": "12345678A"
+          }
+        },
+        "required": [
+          "fullName",
+          "dni"
+        ]
+      },
+      "CreateAppointmentDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-05-15T10:00:00.000Z"
+          },
+          "doctorId": {
+            "type": "string",
+            "example": "d-44"
+          },
+          "specialtyId": {
+            "type": "string",
+            "example": "s-1"
+          },
+          "patientId": {
+            "type": "string",
+            "example": "p-99"
+          },
+          "patient": {
+            "$ref": "#/components/schemas/NewPatientDto"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Consulta cardiologica"
+          }
+        },
+        "required": [
+          "date",
+          "doctorId",
+          "specialtyId"
+        ]
+      }
+    }
+  }
+}
