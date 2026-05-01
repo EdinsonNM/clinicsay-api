@@ -77,7 +77,8 @@ interface PrismaClientLike {
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
-  readonly isEnabled = Boolean(process.env.DATABASE_URL);
+  readonly isEnabled =
+    Boolean(process.env.DATABASE_URL) && process.env.NODE_ENV !== 'test';
   private client?: PrismaClientLike;
 
   get db(): PrismaClientLike {

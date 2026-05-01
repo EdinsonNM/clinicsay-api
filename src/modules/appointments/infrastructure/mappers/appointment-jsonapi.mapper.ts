@@ -30,6 +30,59 @@ export class AppointmentJsonApiMapper {
       },
     };
 
+    const included = this.includedFor(record, projection);
+
+    return included.length > 0 ? { data, included } : { data };
+  }
+
+  static list(
+    records: AppointmentDetailRecord[],
+    projection: AppointmentProjection,
+  ) {
+    const included = new Map<string, Resource>();
+    const data = records.map((record) => {
+      for (const resource of this.includedFor(record, projection)) {
+        included.set(`${resource.type}:${resource.id}`, resource);
+      }
+      return this.resourceFor(record, projection);
+    });
+
+    return included.size > 0
+      ? { data, included: [...included.values()] }
+      : { data };
+  }
+
+  static calendar(records: AppointmentDetailRecord[]) {
+    return this.list(records, { include: new Set(), fields: {} });
+  }
+
+  private static pick(source: object, allowed: string[]) {
+    const record = source as Record<string, unknown>;
+    return Object.fromEntries(allowed.map((field) => [field, record[field]]));
+  }
+
+  private static resourceFor(
+    record: AppointmentDetailRecord,
+    projection: AppointmentProjection,
+  ): Resource {
+    return {
+      type: 'appointments',
+      id: record.appointment.id,
+      attributes: this.pick(
+        record.appointment,
+        AppointmentProjectionParser.attributesFor('appointments', projection),
+      ),
+      relationships: {
+        patient: { data: { type: 'patients', id: record.patient.id } },
+        doctor: { data: { type: 'doctors', id: record.doctor.id } },
+      },
+    };
+  }
+
+  private static includedFor(
+    record: AppointmentDetailRecord,
+    projection: AppointmentProjection,
+  ): Resource[] {
     const included: Resource[] = [];
     if (projection.include.has('patient')) {
       included.push({
@@ -67,21 +120,6 @@ export class AppointmentJsonApiMapper {
         ),
       });
     }
-
-    return included.length > 0 ? { data, included } : { data };
-  }
-
-  static calendar(records: AppointmentDetailRecord[]) {
-    return {
-      data: records.map(
-        (record) =>
-          this.detail(record, { include: new Set(), fields: {} }).data,
-      ),
-    };
-  }
-
-  private static pick(source: object, allowed: string[]) {
-    const record = source as Record<string, unknown>;
-    return Object.fromEntries(allowed.map((field) => [field, record[field]]));
+    return included;
   }
 }

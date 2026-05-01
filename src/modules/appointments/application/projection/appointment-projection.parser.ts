@@ -19,7 +19,7 @@ const includes = new Set<IncludeName>([
 ]);
 const fields: Record<ResourceName, Set<string>> = {
   appointments: new Set(['date', 'status', 'reason']),
-  patients: new Set(['fullName', 'dni']),
+  patients: new Set(['fullName', 'dni', 'email', 'phone', 'address']),
   doctors: new Set(['name', 'cmp']),
   specialties: new Set(['name']),
 };
@@ -46,10 +46,10 @@ export class AppointmentProjectionParser {
 
     const parsedFields: Partial<Record<ResourceName, Set<string>>> = {};
     for (const resource of Object.keys(fields) as ResourceName[]) {
-      const raw = this.asString(query[`fields[${resource}]`]);
+      const raw = this.fieldValue(query, resource);
       if (!raw) continue;
       parsedFields[resource] = new Set(
-        raw.split(',').map((field) => {
+        raw.split(',').filter(Boolean).map((field) => {
           if (!fields[resource].has(field)) {
             throw new BadRequestException(
               `field no soportado: ${resource}.${field}`,
@@ -63,6 +63,16 @@ export class AppointmentProjectionParser {
     for (const key of Object.keys(query)) {
       if (key.startsWith('fields[')) {
         const resource = key.slice(7, -1);
+        if (!(resource in fields)) {
+          throw new BadRequestException(`resource no soportado: ${resource}`);
+        }
+      }
+    }
+    const nestedFields = query.fields;
+    if (nestedFields && typeof nestedFields === 'object') {
+      for (const resource of Object.keys(
+        nestedFields as Record<string, unknown>,
+      )) {
         if (!(resource in fields)) {
           throw new BadRequestException(`resource no soportado: ${resource}`);
         }
@@ -84,5 +94,16 @@ export class AppointmentProjectionParser {
     if (typeof value === 'string') return value;
     if (Array.isArray(value)) return value.join(',');
     return undefined;
+  }
+
+  private static fieldValue(
+    query: Record<string, unknown>,
+    resource: ResourceName,
+  ): string | undefined {
+    const literal = this.asString(query[`fields[${resource}]`]);
+    if (literal) return literal;
+    const nested = query.fields;
+    if (!nested || typeof nested !== 'object') return undefined;
+    return this.asString((nested as Record<string, unknown>)[resource]);
   }
 }

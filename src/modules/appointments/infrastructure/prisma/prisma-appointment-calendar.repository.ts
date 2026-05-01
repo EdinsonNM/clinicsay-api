@@ -3,6 +3,7 @@ import { PrismaService } from '../../../../prisma/prisma.service';
 import { DemoClinicStore } from '../../../shared/demo-clinic.store';
 import { AppointmentCalendarRepository } from '../../application/ports/appointment-calendar.repository';
 import { AppointmentDetailRecord } from '../../application/ports/appointment-read.repository';
+import { AppointmentListFilters } from '../../application/queries/list-appointments.query';
 
 @Injectable()
 export class PrismaAppointmentCalendarRepository implements AppointmentCalendarRepository {
@@ -11,10 +12,15 @@ export class PrismaAppointmentCalendarRepository implements AppointmentCalendarR
     private readonly prisma: PrismaService,
   ) {}
 
-  async listByRange(from: Date, to: Date): Promise<AppointmentDetailRecord[]> {
+  async list(filters: AppointmentListFilters): Promise<AppointmentDetailRecord[]> {
     if (this.prisma.isEnabled) {
       const appointments = await this.prisma.db.appointment.findMany({
-        where: { date: { gte: from, lte: to } },
+        where: {
+          date: { gte: filters.from, lte: filters.to },
+          doctorId: filters.doctorId,
+          patientId: filters.patientId,
+          specialtyId: filters.specialtyId,
+        },
         include: { patient: true, doctor: true, specialty: true },
         orderBy: { date: 'asc' },
       });
@@ -52,7 +58,13 @@ export class PrismaAppointmentCalendarRepository implements AppointmentCalendarR
       this.store.appointments
         .filter((appointment) => {
           const date = new Date(appointment.date);
-          return date >= from && date <= to;
+          return (
+            date >= filters.from &&
+            date <= filters.to &&
+            this.matchesOptional(appointment.doctorId, filters.doctorId) &&
+            this.matchesOptional(appointment.patientId, filters.patientId) &&
+            this.matchesOptional(appointment.specialtyId, filters.specialtyId)
+          );
         })
         .map((appointment) => {
           const patient = this.store.patients.find(
@@ -75,5 +87,9 @@ export class PrismaAppointmentCalendarRepository implements AppointmentCalendarR
           };
         }),
     );
+  }
+
+  private matchesOptional(actual: string, expected?: string) {
+    return !expected || actual === expected;
   }
 }

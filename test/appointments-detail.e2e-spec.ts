@@ -42,12 +42,18 @@ describe('Appointment detail projections (e2e)', () => {
       });
   });
 
-  it('rejects private patient fields', async () => {
+  it('returns explicit private patient fields when requested', async () => {
     await request(app.getHttpServer())
       .get(
-        '/api/v1/appointments/cl-12345?include=patient&fields[patients]=email',
+        '/api/v1/appointments/cl-12345?include=patient&fields[patients]=fullName,email,phone,address',
       )
-      .expect(400);
+      .expect(200)
+      .expect(({ body }) => {
+        const serialized = JSON.stringify(body);
+        expect(serialized).toContain('juan@example.com');
+        expect(serialized).toContain('999111222');
+        expect(serialized).toContain('Av. Demo 123');
+      });
   });
 
   it('does not leak private patient fields even when included relationships are requested', async () => {

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -12,8 +12,8 @@ import { CreateAppointmentUseCase } from '../../application/use-cases/create-app
 import { GetAppointmentDetailUseCase } from '../../application/use-cases/get-appointment-detail.use-case';
 import { ListAppointmentsForCalendarUseCase } from '../../application/use-cases/list-appointments-for-calendar.use-case';
 import { AppointmentProjectionParser } from '../../application/projection/appointment-projection.parser';
+import { ListAppointmentsQueryParser } from '../../application/queries/list-appointments.query';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { ListAppointmentsQueryDto } from './dto/list-appointments-query.dto';
 import { AppointmentResponseDto } from './dto/appointment-response.dto';
 
 @ApiTags('Appointments')
@@ -28,8 +28,33 @@ export class AppointmentsController {
   @Get()
   @ApiOkResponse({ type: AppointmentResponseDto })
   @ApiBadRequestResponse()
-  list(@Query() query: ListAppointmentsQueryDto) {
-    return this.listCalendar.execute(query.from, query.to);
+  @ApiQuery({ name: 'date', required: false, example: '2026-05-15' })
+  @ApiQuery({ name: 'from', required: false, example: '2026-05-01' })
+  @ApiQuery({ name: 'to', required: false, example: '2026-05-31' })
+  @ApiQuery({ name: 'doctorId', required: false, example: 'd-44' })
+  @ApiQuery({ name: 'patientId', required: false, example: 'p-99' })
+  @ApiQuery({ name: 'specialtyId', required: false, example: 's-1' })
+  @ApiQuery({
+    name: 'include',
+    required: false,
+    example: 'patient,doctor.specialty',
+  })
+  @ApiQuery({
+    name: 'fields[appointments]',
+    required: false,
+    example: 'date,status,reason',
+  })
+  @ApiQuery({
+    name: 'fields[patients]',
+    required: false,
+    example: 'fullName,dni,email,phone,address',
+  })
+  @ApiQuery({ name: 'fields[doctors]', required: false, example: 'name,cmp' })
+  @ApiQuery({ name: 'fields[specialties]', required: false, example: 'name' })
+  list(@Req() request: Request) {
+    return this.listCalendar.execute(
+      ListAppointmentsQueryParser.parse(request.query),
+    );
   }
 
   @Post()
@@ -57,7 +82,7 @@ export class AppointmentsController {
   @ApiQuery({
     name: 'fields[patients]',
     required: false,
-    example: 'fullName,dni',
+    example: 'fullName,dni,email,phone,address',
   })
   @ApiQuery({ name: 'fields[doctors]', required: false, example: 'name' })
   @ApiQuery({ name: 'fields[specialties]', required: false, example: 'name' })
