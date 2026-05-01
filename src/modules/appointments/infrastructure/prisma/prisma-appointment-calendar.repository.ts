@@ -12,7 +12,9 @@ export class PrismaAppointmentCalendarRepository implements AppointmentCalendarR
     private readonly prisma: PrismaService,
   ) {}
 
-  async list(filters: AppointmentListFilters): Promise<AppointmentDetailRecord[]> {
+  async list(
+    filters: AppointmentListFilters,
+  ): Promise<AppointmentDetailRecord[]> {
     if (this.prisma.isEnabled) {
       const appointments = await this.prisma.db.appointment.findMany({
         where: {

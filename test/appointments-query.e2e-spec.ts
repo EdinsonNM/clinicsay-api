@@ -9,7 +9,11 @@ type JsonApiListResponse = {
     attributes: Record<string, unknown>;
     relationships: Record<string, unknown>;
   }>;
-  included?: Array<{ type: string; id: string; attributes: Record<string, unknown> }>;
+  included?: Array<{
+    type: string;
+    id: string;
+    attributes: Record<string, unknown>;
+  }>;
 };
 
 describe('Appointment projected queries (e2e)', () => {
@@ -44,9 +48,9 @@ describe('Appointment projected queries (e2e)', () => {
           status: 'SCHEDULED',
           reason: 'Consulta cardiologica',
         });
-        expect(response.included?.some((item) => item.type === 'patients')).toBe(
-          true,
-        );
+        expect(
+          response.included?.some((item) => item.type === 'patients'),
+        ).toBe(true);
         expect(serialized).not.toContain('juan@example.com');
         expect(serialized).not.toContain('999111222');
         expect(serialized).not.toContain('Av. Demo 123');

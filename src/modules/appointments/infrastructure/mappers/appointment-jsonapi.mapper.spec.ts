@@ -29,15 +29,12 @@ describe('AppointmentJsonApiMapper', () => {
   });
 
   it('returns explicit private patient fields only when requested', () => {
-    const json = AppointmentJsonApiMapper.detail(
-      appointmentRecord(),
-      {
-        include: new Set(['patient']),
-        fields: {
-          patients: new Set(['fullName', 'email', 'phone', 'address']),
-        },
+    const json = AppointmentJsonApiMapper.detail(appointmentRecord(), {
+      include: new Set(['patient']),
+      fields: {
+        patients: new Set(['fullName', 'email', 'phone', 'address']),
       },
-    );
+    });
 
     expect(JSON.stringify(json)).toContain('private@example.com');
     expect(JSON.stringify(json)).toContain('secret');
@@ -45,8 +42,17 @@ describe('AppointmentJsonApiMapper', () => {
 
   it('deduplicates included resources for list responses', () => {
     const json = AppointmentJsonApiMapper.list(
-      [appointmentRecord(), { ...appointmentRecord(), appointment: { ...appointmentRecord().appointment, id: 'a2' } }],
-      { include: new Set(['patient', 'doctor', 'doctor.specialty']), fields: {} },
+      [
+        appointmentRecord(),
+        {
+          ...appointmentRecord(),
+          appointment: { ...appointmentRecord().appointment, id: 'a2' },
+        },
+      ],
+      {
+        include: new Set(['patient', 'doctor', 'doctor.specialty']),
+        fields: {},
+      },
     );
 
     expect(json.data).toHaveLength(2);

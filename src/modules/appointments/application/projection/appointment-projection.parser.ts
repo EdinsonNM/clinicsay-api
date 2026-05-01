@@ -49,14 +49,17 @@ export class AppointmentProjectionParser {
       const raw = this.fieldValue(query, resource);
       if (!raw) continue;
       parsedFields[resource] = new Set(
-        raw.split(',').filter(Boolean).map((field) => {
-          if (!fields[resource].has(field)) {
-            throw new BadRequestException(
-              `field no soportado: ${resource}.${field}`,
-            );
-          }
-          return field;
-        }),
+        raw
+          .split(',')
+          .filter(Boolean)
+          .map((field) => {
+            if (!fields[resource].has(field)) {
+              throw new BadRequestException(
+                `field no soportado: ${resource}.${field}`,
+              );
+            }
+            return field;
+          }),
       );
     }
 
@@ -70,9 +73,7 @@ export class AppointmentProjectionParser {
     }
     const nestedFields = query.fields;
     if (nestedFields && typeof nestedFields === 'object') {
-      for (const resource of Object.keys(
-        nestedFields as Record<string, unknown>,
-      )) {
+      for (const resource of Object.keys(nestedFields)) {
         if (!(resource in fields)) {
           throw new BadRequestException(`resource no soportado: ${resource}`);
         }

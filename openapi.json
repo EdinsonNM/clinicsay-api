@@ -43,21 +43,91 @@
         "operationId": "AppointmentsController_list",
         "parameters": [
           {
-            "name": "from",
-            "required": true,
+            "name": "fields[specialties]",
+            "required": false,
             "in": "query",
             "schema": {
-              "example": "2026-05-01",
-              "type": "string"
+              "example": "name"
+            }
+          },
+          {
+            "name": "fields[doctors]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "name,cmp"
+            }
+          },
+          {
+            "name": "fields[patients]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "fullName,dni,email,phone,address"
+            }
+          },
+          {
+            "name": "fields[appointments]",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "date,status,reason"
+            }
+          },
+          {
+            "name": "include",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "patient,doctor.specialty"
+            }
+          },
+          {
+            "name": "specialtyId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "s-1"
+            }
+          },
+          {
+            "name": "patientId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "p-99"
+            }
+          },
+          {
+            "name": "doctorId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "d-44"
             }
           },
           {
             "name": "to",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
-              "example": "2026-05-31",
-              "type": "string"
+              "example": "2026-05-31"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-05-01"
+            }
+          },
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-05-15"
             }
           }
         ],
@@ -149,7 +219,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "example": "fullName,dni"
+              "example": "fullName,dni,email,phone,address"
             }
           },
           {
