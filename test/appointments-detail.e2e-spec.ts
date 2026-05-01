@@ -49,4 +49,17 @@ describe('Appointment detail projections (e2e)', () => {
       )
       .expect(400);
   });
+
+  it('does not leak private patient fields even when included relationships are requested', async () => {
+    await request(app.getHttpServer())
+      .get('/api/v1/appointments/cl-12345?include=patient')
+      .expect(200)
+      .expect(({ body }) => {
+        const serialized = JSON.stringify(body);
+        expect(serialized).toContain('Juan Perez');
+        expect(serialized).not.toContain('juan@example.com');
+        expect(serialized).not.toContain('999111222');
+        expect(serialized).not.toContain('Av. Demo 123');
+      });
+  });
 });

@@ -3,6 +3,7 @@
 ## Alcance
 
 Este proyecto posee el backend NestJS, integración Prisma, contratos API, Swagger/OpenAPI y tests backend.
+Debe poder operar como entrega autocontenida desde `apps/api`, sin depender de `apps/web`.
 
 ## Reglas De Arquitectura
 
@@ -14,6 +15,7 @@ Este proyecto posee el backend NestJS, integración Prisma, contratos API, Swagg
 - La capa application depende de ports, no de Prisma directamente.
 - Los controllers no deben devolver modelos Prisma crudos.
 - PostgreSQL es la base de datos oficial del reto.
+- Prisma de la entrega independiente vive en `apps/api/prisma`.
 - El flujo admin debe soportar login dummy, calendario, creación de citas, pacientes, especialidades y doctores por especialidad.
 - Doctor y Specialty tienen relación many-to-many.
 
@@ -26,9 +28,11 @@ Este proyecto posee el backend NestJS, integración Prisma, contratos API, Swagg
 
 ## Comandos
 
-- `pnpm --filter api dev`
-- `pnpm --filter api test`
-- `pnpm --filter api test:coverage`
-- `pnpm --filter api prisma:migrate`
-- `pnpm --filter api prisma:seed`
-- `pnpm --filter api swagger:export`
+- Desde la raíz: `pnpm --filter api start:dev`
+- Desde `apps/api`: `pnpm start:dev`
+- Desde `apps/api`: `pnpm test`
+- Desde `apps/api`: `pnpm test:coverage`
+- Desde `apps/api`: `pnpm prisma:migrate`
+- Desde `apps/api`: `pnpm prisma:seed`
+- Desde `apps/api`: `pnpm swagger:export`
+- Desde `apps/api`: `docker compose config`
