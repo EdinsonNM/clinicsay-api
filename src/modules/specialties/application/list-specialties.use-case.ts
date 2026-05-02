@@ -1,25 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { DemoClinicStore } from '../../shared/demo-clinic.store';
+import { Inject, Injectable } from '@nestjs/common';
+import { SPECIALTY_REPOSITORY } from './ports/specialty.repository';
+import type { SpecialtyRepository } from './ports/specialty.repository';
 
 @Injectable()
 export class ListSpecialtiesUseCase {
   constructor(
-    private readonly store: DemoClinicStore,
-    private readonly prisma: PrismaService,
+    @Inject(SPECIALTY_REPOSITORY)
+    private readonly specialties: SpecialtyRepository,
   ) {}
 
   async execute() {
-    if (this.prisma.isEnabled) {
-      const specialties = await this.prisma.db.specialty.findMany({
-        select: { id: true, name: true },
-        orderBy: { name: 'asc' },
-      });
-      return { data: specialties };
-    }
-
-    return {
-      data: this.store.specialties.map(({ id, name }) => ({ id, name })),
-    };
+    const data = await this.specialties.list();
+    return { data };
   }
 }

@@ -56,22 +56,52 @@ interface PrismaClientLike {
     create(args: unknown): Promise<PrismaPatientRecord>;
   };
   doctor: {
-    findUnique(args: unknown): Promise<PrismaDoctorRecord | null>;
+    findMany(args: unknown): Promise<
+      Array<
+        PrismaDoctorRecord & {
+          specialties: Array<{ specialtyId: string }>;
+        }
+      >
+    >;
+    findUnique(args: unknown): Promise<
+      | (PrismaDoctorRecord & {
+          specialties: Array<{ specialtyId: string }>;
+        })
+      | null
+    >;
+    create(args: unknown): Promise<
+      PrismaDoctorRecord & {
+        specialties: Array<{ specialtyId: string }>;
+      }
+    >;
+    update(args: unknown): Promise<
+      PrismaDoctorRecord & {
+        specialties: Array<{ specialtyId: string }>;
+      }
+    >;
+    delete(args: unknown): Promise<PrismaDoctorRecord>;
   };
   specialty: {
     findMany(args: unknown): Promise<PrismaSpecialtyRecord[]>;
     findUnique(args: unknown): Promise<PrismaSpecialtyRecord | null>;
+    create(args: unknown): Promise<PrismaSpecialtyRecord>;
+    update(args: unknown): Promise<PrismaSpecialtyRecord>;
+    delete(args: unknown): Promise<PrismaSpecialtyRecord>;
+    count(args: unknown): Promise<number>;
   };
   doctorSpecialty: {
     findMany(args: unknown): Promise<PrismaDoctorSpecialtyRecord[]>;
     findUnique(
       args: unknown,
     ): Promise<{ doctorId: string; specialtyId: string } | null>;
+    createMany(args: unknown): Promise<{ count: number }>;
+    deleteMany(args: unknown): Promise<{ count: number }>;
   };
   appointment: {
     findMany(args: unknown): Promise<PrismaAppointmentWithRelations[]>;
     findUnique(args: unknown): Promise<PrismaAppointmentWithRelations | null>;
     create(args: unknown): Promise<PrismaAppointmentRecord>;
+    count(args: unknown): Promise<number>;
   };
 }
 

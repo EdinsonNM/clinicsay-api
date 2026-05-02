@@ -35,5 +35,51 @@ describe('Catalogs (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/doctors?specialtyId=${specialtiesBody.data[0].id}`)
       .expect(200);
+    await request(app.getHttpServer()).get('/api/v1/doctors').expect(200);
+  });
+
+  it('CRUD de especialidades y doctores (demo store)', async () => {
+    const suffix = Date.now();
+    const createdSpec = await request(app.getHttpServer())
+      .post('/api/v1/specialties')
+      .send({ name: `E2E Especialidad ${suffix}` })
+      .expect(201);
+    const specId = (createdSpec.body as { data: { id: string } }).data.id;
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/specialties/${specId}`)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/specialties/${specId}`)
+      .send({ name: `E2E Especialidad ${suffix} (editada)` })
+      .expect(200);
+
+    const cmp = `CMP-E2E-${suffix}`;
+    const createdDoc = await request(app.getHttpServer())
+      .post('/api/v1/doctors')
+      .send({
+        name: 'Dr. E2E Demo',
+        cmp,
+        specialtyIds: [specId],
+      })
+      .expect(201);
+    const docBody = createdDoc.body as {
+      data: { id: string; specialtyIds: string[] };
+    };
+    expect(docBody.data.specialtyIds).toContain(specId);
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/doctors/${docBody.data.id}`)
+      .send({ name: 'Dr. E2E Demo Actualizado' })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/doctors/${docBody.data.id}`)
+      .expect(204);
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/specialties/${specId}`)
+      .expect(204);
   });
 });

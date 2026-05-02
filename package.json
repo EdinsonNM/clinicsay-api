@@ -25,6 +25,7 @@
     "prisma:generate": "prisma generate --schema ./prisma/schema.prisma",
     "prisma:migrate": "prisma migrate deploy --schema ./prisma/schema.prisma",
     "prisma:seed": "pnpm prisma:generate && ts-node ./prisma/seed.ts",
+    "seed:doctor-specialty": "pnpm prisma:generate && ts-node ./scripts/seed-doctor-specialty-sample.ts",
     "swagger:export": "ts-node scripts/export-openapi.ts"
   },
   "dependencies": {
