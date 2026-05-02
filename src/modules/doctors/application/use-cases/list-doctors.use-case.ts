@@ -1,18 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DOCTOR_REPOSITORY } from '../ports/doctor.repository';
-import type { DoctorRepository } from '../ports/doctor.repository';
+import { DoctorJsonApiMapper } from '../../infrastructure/mappers/doctor-jsonapi.mapper';
+import {
+  DOCTOR_READ_REPOSITORY,
+  type DoctorReadRepository,
+} from '../ports/doctor-read.repository';
+import type { ListDoctorsQuery } from '../queries/list-doctors.query';
 
 @Injectable()
 export class ListDoctorsUseCase {
   constructor(
-    @Inject(DOCTOR_REPOSITORY)
-    private readonly doctors: DoctorRepository,
+    @Inject(DOCTOR_READ_REPOSITORY)
+    private readonly doctorsRead: DoctorReadRepository,
   ) {}
 
-  async execute(specialtyId?: string) {
-    const data = await this.doctors.list(
-      specialtyId ? { specialtyId } : undefined,
+  async execute(query: ListDoctorsQuery) {
+    const rows = await this.doctorsRead.list(
+      { specialtyId: query.specialtyId },
+      query.projection,
     );
-    return { data };
+    return DoctorJsonApiMapper.list(rows, query.projection);
   }
 }

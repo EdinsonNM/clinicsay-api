@@ -1,17 +1,21 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DOCTOR_REPOSITORY } from '../ports/doctor.repository';
-import type { DoctorRepository } from '../ports/doctor.repository';
+import { DoctorJsonApiMapper } from '../../infrastructure/mappers/doctor-jsonapi.mapper';
+import {
+  DOCTOR_READ_REPOSITORY,
+  type DoctorReadRepository,
+} from '../ports/doctor-read.repository';
+import type { GetDoctorDetailQuery } from '../queries/get-doctor-detail.query';
 
 @Injectable()
 export class GetDoctorUseCase {
   constructor(
-    @Inject(DOCTOR_REPOSITORY)
-    private readonly doctors: DoctorRepository,
+    @Inject(DOCTOR_READ_REPOSITORY)
+    private readonly doctorsRead: DoctorReadRepository,
   ) {}
 
-  async execute(id: string) {
-    const row = await this.doctors.findById(id);
-    if (!row) throw new NotFoundException('Doctor no encontrado');
-    return { data: row };
+  async execute(query: GetDoctorDetailQuery) {
+    const record = await this.doctorsRead.findDetail(query.id, query.projection);
+    if (!record) throw new NotFoundException('Doctor no encontrado');
+    return DoctorJsonApiMapper.detail(record, query.projection);
   }
 }

@@ -8,7 +8,7 @@ import {
   Param,
   Patch,
   Post,
-  Query,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -20,6 +20,9 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import type { Request } from 'express';
+import { DoctorProjectionParser } from '../../application/projection/doctor-projection.parser';
+import { ListDoctorsQueryParser } from '../../application/queries/list-doctors.query';
 import { CreateDoctorUseCase } from '../../application/use-cases/create-doctor.use-case';
 import { DeleteDoctorUseCase } from '../../application/use-cases/delete-doctor.use-case';
 import { GetDoctorUseCase } from '../../application/use-cases/get-doctor.use-case';
@@ -46,10 +49,32 @@ export class DoctorsController {
     required: false,
     description: 'Si se envia, solo doctores con esa especialidad',
   })
-  @ApiOkResponse({ description: 'Lista en { data: DoctorItemDto[] }' })
+  @ApiQuery({
+    name: 'include',
+    required: false,
+    example: 'specialties',
+    description:
+      'Solo listado: specialties. Respuesta JSON:API con data + included opcional.',
+  })
+  @ApiQuery({
+    name: 'fields[doctors]',
+    required: false,
+    example: 'name,cmp,specialtyIds',
+  })
+  @ApiQuery({
+    name: 'fields[specialties]',
+    required: false,
+    example: 'name',
+  })
+  @ApiOkResponse({
+    description:
+      'JSON:API: data[] doctores; include=specialties agrega especialidades en included',
+  })
   @ApiBadRequestResponse()
-  list(@Query('specialtyId') specialtyId?: string) {
-    return this.listDoctors.execute(specialtyId);
+  list(@Req() request: Request) {
+    return this.listDoctors.execute(
+      ListDoctorsQueryParser.parse(request.query as Record<string, unknown>),
+    );
   }
 
   @Post()
@@ -61,10 +86,45 @@ export class DoctorsController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: DoctorItemDto })
+  @ApiQuery({
+    name: 'include',
+    required: false,
+    example: 'specialties,appointments.upcoming,appointments.history',
+    description:
+      'Sin este param: por defecto incluye specialties + citas proximas + historial. Vacio explicito (?include=): sin relaciones.',
+  })
+  @ApiQuery({
+    name: 'fields[doctors]',
+    required: false,
+    example: 'name,cmp,specialtyIds',
+  })
+  @ApiQuery({
+    name: 'fields[specialties]',
+    required: false,
+    example: 'name',
+  })
+  @ApiQuery({
+    name: 'fields[appointments]',
+    required: false,
+    example: 'date,status,reason',
+  })
+  @ApiQuery({
+    name: 'fields[patients]',
+    required: false,
+    example: 'fullName,dni',
+  })
+  @ApiOkResponse({
+    description:
+      'JSON:API doctor en data; relaciones upcomingAppointments / historicalAppointments; included con appointments, patients, specialties',
+  })
   @ApiNotFoundResponse()
-  detail(@Param('id') id: string) {
-    return this.getDoctor.execute(id);
+  detail(@Param('id') id: string, @Req() request: Request) {
+    return this.getDoctor.execute({
+      id,
+      projection: DoctorProjectionParser.parseDetailQuery(
+        request.query as Record<string, unknown>,
+      ),
+    });
   }
 
   @Patch(':id')
