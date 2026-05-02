@@ -6,11 +6,11 @@ services:
       POSTGRES_USER: clinicsay
       POSTGRES_PASSWORD: clinicsay
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - clinicsay_api_db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U clinicsay -d clinicsay"]
+      test: ['CMD-SHELL', 'pg_isready -U clinicsay -d clinicsay']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -20,14 +20,14 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgresql://clinicsay:clinicsay@db:5432/clinicsay
+      DB_URL: postgresql://clinicsay:clinicsay@db:5432/clinicsay
       PORT: 3000
       NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - '3000:3000'
 
 volumes:
   clinicsay_api_db:
