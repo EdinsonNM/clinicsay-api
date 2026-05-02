@@ -200,13 +200,13 @@ const config = {
   inlineDatasources: {
     db: {
       url: {
-        fromEnvVar: 'DB_URL',
+        fromEnvVar: 'DATABASE_URL',
         value: null,
       },
     },
   },
   inlineSchema:
-    'generator client {\n  provider = "prisma-client-js"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DB_URL")\n}\n\nmodel Patient {\n  id           String        @id @default(cuid())\n  fullName     String\n  dni          String        @unique\n  email        String?\n  phone        String?\n  address      String?\n  appointments Appointment[]\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n}\n\nmodel Doctor {\n  id           String            @id @default(cuid())\n  name         String\n  cmp          String            @unique\n  specialties  DoctorSpecialty[]\n  appointments Appointment[]\n  createdAt    DateTime          @default(now())\n  updatedAt    DateTime          @updatedAt\n}\n\nmodel Specialty {\n  id           String            @id @default(cuid())\n  name         String            @unique\n  doctors      DoctorSpecialty[]\n  appointments Appointment[]\n  createdAt    DateTime          @default(now())\n  updatedAt    DateTime          @updatedAt\n}\n\nmodel DoctorSpecialty {\n  doctorId    String\n  specialtyId String\n  doctor      Doctor    @relation(fields: [doctorId], references: [id])\n  specialty   Specialty @relation(fields: [specialtyId], references: [id])\n\n  @@id([doctorId, specialtyId])\n}\n\nmodel Appointment {\n  id          String            @id @default(cuid())\n  patientId   String\n  doctorId    String\n  specialtyId String\n  date        DateTime\n  status      AppointmentStatus @default(SCHEDULED)\n  reason      String?\n  patient     Patient           @relation(fields: [patientId], references: [id])\n  doctor      Doctor            @relation(fields: [doctorId], references: [id])\n  specialty   Specialty         @relation(fields: [specialtyId], references: [id])\n  createdAt   DateTime          @default(now())\n  updatedAt   DateTime          @updatedAt\n\n  @@index([date])\n  @@index([doctorId])\n  @@index([patientId])\n  @@index([specialtyId])\n}\n\nenum AppointmentStatus {\n  SCHEDULED\n  CANCELLED\n  COMPLETED\n}\n',
+    'generator client {\n  provider = "prisma-client-js"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nmodel Patient {\n  id           String        @id @default(cuid())\n  fullName     String\n  dni          String        @unique\n  email        String?\n  phone        String?\n  address      String?\n  appointments Appointment[]\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n}\n\nmodel Doctor {\n  id           String            @id @default(cuid())\n  name         String\n  cmp          String            @unique\n  specialties  DoctorSpecialty[]\n  appointments Appointment[]\n  createdAt    DateTime          @default(now())\n  updatedAt    DateTime          @updatedAt\n}\n\nmodel Specialty {\n  id           String            @id @default(cuid())\n  name         String            @unique\n  doctors      DoctorSpecialty[]\n  appointments Appointment[]\n  createdAt    DateTime          @default(now())\n  updatedAt    DateTime          @updatedAt\n}\n\nmodel DoctorSpecialty {\n  doctorId    String\n  specialtyId String\n  doctor      Doctor    @relation(fields: [doctorId], references: [id])\n  specialty   Specialty @relation(fields: [specialtyId], references: [id])\n\n  @@id([doctorId, specialtyId])\n}\n\nmodel Appointment {\n  id          String            @id @default(cuid())\n  patientId   String\n  doctorId    String\n  specialtyId String\n  date        DateTime\n  status      AppointmentStatus @default(SCHEDULED)\n  reason      String?\n  patient     Patient           @relation(fields: [patientId], references: [id])\n  doctor      Doctor            @relation(fields: [doctorId], references: [id])\n  specialty   Specialty         @relation(fields: [specialtyId], references: [id])\n  createdAt   DateTime          @default(now())\n  updatedAt   DateTime          @updatedAt\n\n  @@index([date])\n  @@index([doctorId])\n  @@index([patientId])\n  @@index([specialtyId])\n}\n\nenum AppointmentStatus {\n  SCHEDULED\n  CANCELLED\n  COMPLETED\n}\n',
   inlineSchemaHash:
     'cd4675a057def1e713c3cb47d9d3cc9af4dfa72b773bcaf1da3aa6aa4e6cab1c',
   copyEngine: true,
@@ -222,9 +222,11 @@ config.compilerWasm = undefined;
 
 config.injectableEdgeEnv = () => ({
   parsed: {
-    DB_URL:
-      (typeof globalThis !== 'undefined' && globalThis['DB_URL']) ||
-      (typeof process !== 'undefined' && process.env && process.env.DB_URL) ||
+    DATABASE_URL:
+      (typeof globalThis !== 'undefined' && globalThis['DATABASE_URL']) ||
+      (typeof process !== 'undefined' &&
+        process.env &&
+        process.env.DATABASE_URL) ||
       undefined,
   },
 });

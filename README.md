@@ -12,7 +12,7 @@ API NestJS del reto ClinicSay. Esta entrega es autocontenida para poder vivir co
 
 | Variable | Requerida | Proposito | Ejemplo |
 | --- | --- | --- | --- |
-| `DB_URL` | Si | Conexion PostgreSQL usada por Prisma | `postgresql://clinicsay:clinicsay@localhost:5432/clinicsay` |
+| `DATABASE_URL` | Si | Conexion PostgreSQL usada por Prisma | `postgresql://clinicsay:clinicsay@localhost:5432/clinicsay` |
 | `PORT` | Si | Puerto HTTP de NestJS | `3000` |
 | `NODE_ENV` | No | Modo de ejecucion | `development` |
 
@@ -92,5 +92,5 @@ Los campos privados de paciente (`email`, `phone`, `address`) no se exponen por 
 ## Troubleshooting
 
 - Si Prisma no encuentra el schema, ejecutar desde `apps/api` y verificar `prisma/schema.prisma`.
-- Si la API no conecta a la base, revisar `DB_URL` y que `docker compose up -d db` este activo.
+- Si la API no conecta a la base, revisar `DATABASE_URL` y que `docker compose up -d db` este activo.
 - Si `swagger:export` falla, ejecutar primero `pnpm prisma:generate`.

@@ -36,5 +36,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-console.log('DB_URL:', process.env.DB_URL);
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
 void bootstrap();

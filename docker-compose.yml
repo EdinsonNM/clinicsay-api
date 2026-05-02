@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      DB_URL: postgresql://clinicsay:clinicsay@db:5432/clinicsay
+      DATABASE_URL: postgresql://clinicsay:clinicsay@db:5432/clinicsay
       PORT: 3000
       NODE_ENV: production
     depends_on:
