@@ -14,4 +14,4 @@ ENV NODE_ENV=production
 RUN corepack enable
 COPY --from=build /app ./
 EXPOSE 3000
-CMD ["sh", "-c", "pnpm prisma:migrate && pnpm prisma:seed && pnpm start:prod"]
+CMD ["sh", "-c", "pnpm prisma:migrate && pnpm start:prod"]
