@@ -82,7 +82,9 @@
     "collectCoverageFrom": [
       "modules/auth/application/**/*.ts",
       "modules/appointments/application/**/*.ts",
-      "modules/appointments/infrastructure/mappers/**/*.ts"
+      "modules/appointments/infrastructure/mappers/**/*.ts",
+      "modules/doctors/application/**/*.ts",
+      "modules/doctors/infrastructure/mappers/**/*.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

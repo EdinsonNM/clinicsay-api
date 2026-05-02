@@ -44,4 +44,33 @@ describe('DoctorProjectionParser', () => {
       'email',
     ]);
   });
+
+  it('rechaza resource o field desconocidos', () => {
+    expect(() =>
+      DoctorProjectionParser.parseDetailQuery({
+        'fields[no_existe]': 'name',
+      }),
+    ).toThrow('resource no soportado');
+    expect(() =>
+      DoctorProjectionParser.parseDetailQuery({
+        include: 'specialties',
+        'fields[doctors]': 'nombre_inventado',
+      }),
+    ).toThrow('field no soportado');
+    expect(() =>
+      DoctorProjectionParser.parseDetailQuery({
+        fields: { recursoMalo: 'name' },
+      }),
+    ).toThrow('resource no soportado');
+  });
+
+  it('lee fields anidados desde objeto fields', () => {
+    const p = DoctorProjectionParser.parseListQuery({
+      fields: { doctors: 'name,cmp' },
+    });
+    expect(DoctorProjectionParser.attributesFor('doctors', p)).toEqual([
+      'name',
+      'cmp',
+    ]);
+  });
 });

@@ -47,6 +47,9 @@ describe('ListAppointmentsQueryParser', () => {
     expect(() =>
       ListAppointmentsQueryParser.parse({ date: '05-15-2026' }),
     ).toThrow('YYYY-MM-DD');
+    expect(() =>
+      ListAppointmentsQueryParser.parse({ date: '2026-13-01' }),
+    ).toThrow('fecha invalida');
   });
 
   it('rejects invalid identifiers', () => {

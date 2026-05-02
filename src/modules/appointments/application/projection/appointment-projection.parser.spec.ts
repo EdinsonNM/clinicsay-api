@@ -45,4 +45,12 @@ describe('AppointmentProjectionParser', () => {
       AppointmentProjectionParser.parse({ include: 'patient,insurance' }),
     ).toThrow('include no soportado');
   });
+
+  it('rejects resource desconocido en objeto fields anidado', () => {
+    expect(() =>
+      AppointmentProjectionParser.parse({
+        fields: { recursoInvalido: 'date' },
+      }),
+    ).toThrow('resource no soportado');
+  });
 });

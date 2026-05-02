@@ -40,6 +40,12 @@ describe('AppointmentJsonApiMapper', () => {
     expect(JSON.stringify(json)).toContain('secret');
   });
 
+  it('calendar usa listado sin includes ni bloque included', () => {
+    const json = AppointmentJsonApiMapper.calendar([appointmentRecord()]);
+    expect(json.data).toHaveLength(1);
+    expect('included' in json).toBe(false);
+  });
+
   it('deduplicates included resources for list responses', () => {
     const json = AppointmentJsonApiMapper.list(
       [
